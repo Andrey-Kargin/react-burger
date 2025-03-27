@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import {
-	Tab,
-	CurrencyIcon,
-	Counter,
-} from '@ya.praktikum/react-developer-burger-ui-components';
+import { Tab, CurrencyIcon, Counter } from '@ya.praktikum/react-developer-burger-ui-components';
 import PropTypes from 'prop-types';
+import { IngredientType } from '../../utils/types';
 import styles from './burger-ingredients.module.css';
 
 function BurgerIngredients({ ingredients }) {
@@ -69,16 +66,7 @@ function BurgerIngredients({ ingredients }) {
 }
 
 BurgerIngredients.propTypes = {
-	ingredients: PropTypes.arrayOf(
-		PropTypes.shape({
-			_id: PropTypes.string.isRequired,
-			name: PropTypes.string.isRequired,
-			type: PropTypes.oneOf(['bun', 'main', 'sauce']).isRequired,
-			price: PropTypes.number.isRequired,
-			image: PropTypes.string.isRequired,
-			__v: PropTypes.number,
-		})
-	).isRequired,
+	ingredients: PropTypes.arrayOf(IngredientType).isRequired,
 };
 
 export default BurgerIngredients;

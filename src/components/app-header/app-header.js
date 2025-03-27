@@ -1,4 +1,9 @@
-import { Logo, BurgerIcon, ListIcon, ProfileIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import {
+	Logo,
+	BurgerIcon,
+	ListIcon,
+	ProfileIcon,
+} from '@ya.praktikum/react-developer-burger-ui-components';
 import { Link, NavLink } from 'react-router-dom';
 import styles from './app-header.module.css';
 function AppHeader() {
