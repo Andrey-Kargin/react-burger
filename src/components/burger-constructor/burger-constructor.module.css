@@ -1,0 +1,33 @@
+.burgerConstructor {
+	display: grid;
+	box-sizing: border-box;
+	width: 600px;
+}
+
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	height: calc(100vh / 3);
+	padding-left: 0;
+	overflow-y: auto;
+}
+
+.list > li {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.total {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	margin-bottom: 52px;
+}
+
+.totalCurrency {
+	width: 36px;
+	height: 36px;
+	vertical-align: bottom;
+}

@@ -21,11 +21,11 @@
 		"plugins": [{ "name": "typescript-plugin-css-modules" }],
 		"paths": {
 			"@pages/*": ["./src/pages/*"],
-			"@components/*": ["./src/component/*"],
+			"@components/*": ["./src/components/*"],
 			"@services/*": ["./src/services/*"],
 			"@utils/*": ["./src/utils/*"]
 		}
 	},
 	"outDir": "./dist/",
-	"include": ["src/**/*"]
+	"include": ["src/**/*"],
 }
