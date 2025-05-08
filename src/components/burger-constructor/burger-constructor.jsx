@@ -1,9 +1,14 @@
-import { ConstructorElement, DragIcon, CurrencyIcon, Button } from '@ya.praktikum/react-developer-burger-ui-components';
+import {
+	ConstructorElement,
+	DragIcon,
+	CurrencyIcon,
+	Button,
+} from '@ya.praktikum/react-developer-burger-ui-components';
 import { IngredientType } from '../../utils/types';
 import styles from './burger-constructor.module.css';
 import PropTypes from 'prop-types';
 
-const BurgerConstructor = ({ bun, fillings }) => {
+const BurgerConstructor = ({ bun, fillings, onPlaceOrder }) => {
 	const sum =
 		bun.price + fillings.reduce((result, current) => result + current.price, 0);
 
@@ -45,7 +50,8 @@ const BurgerConstructor = ({ bun, fillings }) => {
 					htmlType='button'
 					type='primary'
 					size='large'
-					extraClass='ml-10'>
+					extraClass='ml-10'
+					onClick={onPlaceOrder}>
 					Оформить заказ
 				</Button>
 			</div>
@@ -56,6 +62,7 @@ const BurgerConstructor = ({ bun, fillings }) => {
 BurgerConstructor.propTypes = {
 	bun: IngredientType.isRequired,
 	fillings: PropTypes.arrayOf(IngredientType).isRequired,
+	onPlaceOrder: PropTypes.func.isRequired,
 };
 
 export default BurgerConstructor;

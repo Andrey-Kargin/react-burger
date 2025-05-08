@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { Tab, CurrencyIcon, Counter } from '@ya.praktikum/react-developer-burger-ui-components';
+import {
+	Tab,
+	CurrencyIcon,
+	Counter,
+} from '@ya.praktikum/react-developer-burger-ui-components';
 import PropTypes from 'prop-types';
 import { IngredientType } from '../../utils/types';
 import styles from './burger-ingredients.module.css';
 
-function BurgerIngredients({ ingredients }) {
+function BurgerIngredients({ ingredients, onOpenIngredient }) {
 	const [current, setCurrent] = useState('bun');
 
 	const tabs = [
@@ -37,7 +41,15 @@ function BurgerIngredients({ ingredients }) {
 							{ingredients
 								.filter((item) => item.type === tab.type)
 								.map((ingredient) => (
-									<li key={ingredient._id} className={styles.ingredientCard}>
+									<li
+										key={ingredient._id}
+										className={styles.ingredientCard}
+										onClick={() => onOpenIngredient(ingredient)}
+										role='button'
+										tabIndex={0}
+										onKeyDown={(e) =>
+											e.key === 'Enter' && onOpenIngredient(ingredient)
+										}>
 										{ingredient.__v > 0 && (
 											<Counter count={ingredient.__v} size='default' />
 										)}
@@ -67,6 +79,7 @@ function BurgerIngredients({ ingredients }) {
 
 BurgerIngredients.propTypes = {
 	ingredients: PropTypes.arrayOf(IngredientType).isRequired,
+	onOpenIngredient: PropTypes.func.isRequired,
 };
 
 export default BurgerIngredients;
