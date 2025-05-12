@@ -1,23 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const sendOrder = createAsyncThunk(
-  'order/sendOrder',
-  async (ingredientIds, { rejectWithValue }) => {
-    try {
-      const res = await fetch('https://norma.nomoreparties.space/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ingredients: ingredientIds }),
-      });
-      if (!res.ok) throw new Error('Ошибка при создании заказа');
-      const data = await res.json();
-      return data.order.number;
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  }
+	'order/sendOrder',
+	async (ingredientIds) => {
+	  const res = await fetch('https://norma.nomoreparties.space/api/orders', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ ingredients: ingredientIds }),
+	  });
+	  if (!res.ok) {
+		throw new Error('Ошибка при создании заказа');
+	  }
+	  const data = await res.json();
+	  return data.order.number;
+	}
 );
 
 const orderSlice = createSlice({

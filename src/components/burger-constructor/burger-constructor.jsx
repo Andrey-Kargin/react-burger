@@ -1,12 +1,12 @@
 import {
 	ConstructorElement,
-	DragIcon,
 	CurrencyIcon,
 	Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDrop } from 'react-dnd';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
+import { DraggableItem } from './draggable-item';
 
 import {
 	addIngredient,
@@ -15,34 +15,6 @@ import {
 } from '../../services/constructorSlice';
 import { sendOrder } from '../../services/orderSlice';
 import styles from './burger-constructor.module.css';
-
-const DraggableItem = ({ item, index, moveCard, handleRemove }) => {
-	const ref = useRef(null);
-
-	const [, drop] = useDrop({
-		accept: 'sortable-ingredient',
-		hover(draggedItem) {
-			if (!ref.current || draggedItem.index === index) return;
-
-			moveCard(draggedItem.index, index);
-			draggedItem.index = index;
-		},
-	});
-
-	const dragRef = useRef(null);
-
-	return (
-		<li ref={(node) => dragRef.current = drop(ref.current = node)} className={styles.draggableItem}>
-			<DragIcon type="primary" />
-			<ConstructorElement
-				text={item.name}
-				price={item.price}
-				thumbnail={item.image_mobile}
-				handleClose={() => handleRemove(item.uid)}
-			/>
-		</li>
-	);
-};
 
 const BurgerConstructor = () => {
 	const dispatch = useDispatch();
