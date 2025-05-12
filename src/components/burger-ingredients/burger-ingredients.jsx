@@ -1,15 +1,52 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
 	Tab,
 	CurrencyIcon,
 	Counter,
 } from '@ya.praktikum/react-developer-burger-ui-components';
-import PropTypes from 'prop-types';
-import { IngredientType } from '../../utils/types';
+import { useDrag } from 'react-dnd';
+import { openIngredient } from '../../services/ingredientDetailsSlice';
+import { addIngredient } from '../../services/constructorSlice';
 import styles from './burger-ingredients.module.css';
 
-function BurgerIngredients({ ingredients, onOpenIngredient }) {
+const IngredientCard = ({ ingredient }) => {
+	const dispatch = useDispatch();
+	const { ingredients, bun } = useSelector((state) => state.burgerConstructor);
+
+	const count =
+		ingredient.type === 'bun'
+			? bun?._id === ingredient._id ? 2 : 0
+			: ingredients.filter((i) => i._id === ingredient._id).length;
+
+	const [, dragRef] = useDrag({
+		type: 'ingredient',
+		item: ingredient,
+	});
+
+	return (
+		<li
+			className={styles.ingredientCard}
+			onClick={() => dispatch(openIngredient(ingredient))}
+			ref={dragRef}
+			role="button"
+			tabIndex={0}
+			onKeyDown={(e) => e.key === 'Enter' && dispatch(openIngredient(ingredient))}
+		>
+			{count > 0 && <Counter count={count} size="default" />}
+			<img src={ingredient.image} alt={ingredient.name} className="ml-4 mr-4" />
+			<div className={`${styles.priceContainer} mt-1`}>
+				<span className="text text_type_digits-default">{ingredient.price}</span>
+				<CurrencyIcon type="primary" />
+			</div>
+			<p className="text text_type_main-default mt-1">{ingredient.name}</p>
+		</li>
+	);
+};
+
+function BurgerIngredients() {
 	const [current, setCurrent] = useState('bun');
+	const { items: ingredients } = useSelector((state) => state.ingredients);
 
 	const tabs = [
 		{ type: 'bun', label: 'Булки' },
@@ -41,33 +78,7 @@ function BurgerIngredients({ ingredients, onOpenIngredient }) {
 							{ingredients
 								.filter((item) => item.type === tab.type)
 								.map((ingredient) => (
-									<li
-										key={ingredient._id}
-										className={styles.ingredientCard}
-										onClick={() => onOpenIngredient(ingredient)}
-										role='button'
-										tabIndex={0}
-										onKeyDown={(e) =>
-											e.key === 'Enter' && onOpenIngredient(ingredient)
-										}>
-										{ingredient.__v > 0 && (
-											<Counter count={ingredient.__v} size='default' />
-										)}
-										<img
-											src={ingredient.image}
-											alt={ingredient.name}
-											className='ml-4 mr-4'
-										/>
-										<div className={`${styles.priceContainer} mt-1`}>
-											<span className='text text_type_digits-default'>
-												{ingredient.price}
-											</span>
-											<CurrencyIcon type='primary' />
-										</div>
-										<p className='text text_type_main-default mt-1'>
-											{ingredient.name}
-										</p>
-									</li>
+									<IngredientCard key={ingredient._id} ingredient={ingredient} />
 								))}
 						</ul>
 					</div>
@@ -76,10 +87,5 @@ function BurgerIngredients({ ingredients, onOpenIngredient }) {
 		</section>
 	);
 }
-
-BurgerIngredients.propTypes = {
-	ingredients: PropTypes.arrayOf(IngredientType).isRequired,
-	onOpenIngredient: PropTypes.func.isRequired,
-};
 
 export default BurgerIngredients;

@@ -1,5 +1,6 @@
 import styles from './app.module.css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import AppHeader from '../app-header/app-header';
 import BurgerIngredients from '../burger-ingredients/burger-ingredients';
@@ -9,58 +10,31 @@ import Modal from '../modal/modal';
 import IngredientDetails from '../ingredient-details/ingredient-details';
 import OrderDetails from '../order-details/order-details';
 
-import data from '../../utils/data';
-
-const API_URL = 'https://norma.nomoreparties.space/api/ingredients';
+import { fetchIngredients } from '../../services/ingredientsSlice';
+import { closeIngredient } from '../../services/ingredientDetailsSlice';
+import { clearOrder } from '../../services/orderSlice';
 
 export const App = () => {
-	const [ingredients, setIngredients] = useState([]);
-	const [hasError, setHasError] = useState(false);
-	const [selectedIngredient, setSelectedIngredient] = useState(null);
-	const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-	const [fillings, setFillings] = useState([]);
-	const [bun, setBun] = useState(null);
+	const dispatch = useDispatch();
+
+	const { item: selectedIngredient } = useSelector((state) => state.ingredientDetails);
+	const { number: orderNumber } = useSelector((state) => state.order);
+	const { error, loading } = useSelector((state) => state.ingredients);
 
 	useEffect(() => {
-		fetch(API_URL)
-			.then((res) => {
-				if (!res.ok) throw new Error('Ошибка при получении данных');
-				return res.json();
-			})
-			.then((responseData) => {
-				const items = responseData?.data?.length > 0 ? responseData.data : data;
-				setIngredients(items);
-
-				const bunItem = items.find((item) => item.type === 'bun');
-				setBun(bunItem);
-
-				const randomFillings = items
-					.filter((item) => item.type !== 'bun')
-					.sort(() => 0.5 - Math.random())
-					.slice(0, 6);
-				setFillings(randomFillings);
-			})
-			.catch(() => {
-				setHasError(true);
-				setIngredients(data);
-
-				const bunItem = data.find((item) => item.type === 'bun');
-				setBun(bunItem);
-
-				const randomFillings = data
-					.filter((item) => item.type !== 'bun')
-					.sort(() => 0.5 - Math.random())
-					.slice(0, 6);
-				setFillings(randomFillings);
-			});
-	}, []);
+		dispatch(fetchIngredients());
+	}, [dispatch]);
 
 	const closeModal = () => {
-		setSelectedIngredient(null);
-		setIsOrderModalOpen(false);
+		if (selectedIngredient) dispatch(closeIngredient());
+		if (orderNumber) dispatch(clearOrder());
 	};
 
-	if (hasError) {
+	if (loading) {
+		return <p className="text text_type_main-medium p-10">Загрузка ингредиентов...</p>;
+	}
+
+	if (error) {
 		return <p className="text text_type_main-medium p-10">Ошибка загрузки ингредиентов</p>;
 	}
 
@@ -68,26 +42,17 @@ export const App = () => {
 		<div className={styles.app}>
 			<AppHeader />
 			<main className={styles.main}>
-				<BurgerIngredients
-					ingredients={ingredients}
-					onOpenIngredient={setSelectedIngredient}
-				/>
-				{bun && (
-					<BurgerConstructor
-						bun={bun}
-						fillings={fillings}
-						onPlaceOrder={() => setIsOrderModalOpen(true)}
-					/>
-				)}
+				<BurgerIngredients />
+				<BurgerConstructor />
 			</main>
 
 			{selectedIngredient && (
-				<Modal onClose={closeModal} title='Детали ингредиента'>
+				<Modal onClose={closeModal} title="Детали ингредиента">
 					<IngredientDetails ingredient={selectedIngredient} />
 				</Modal>
 			)}
 
-			{isOrderModalOpen && (
+			{orderNumber && (
 				<Modal onClose={closeModal}>
 					<OrderDetails />
 				</Modal>
