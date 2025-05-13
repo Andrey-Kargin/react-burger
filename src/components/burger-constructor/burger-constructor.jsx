@@ -1,57 +1,103 @@
 import {
 	ConstructorElement,
-	DragIcon,
 	CurrencyIcon,
 	Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
-import { IngredientType } from '../../utils/types';
-import styles from './burger-constructor.module.css';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { useDrop } from 'react-dnd';
+import { useMemo } from 'react';
+import { DraggableItem } from './draggable-item';
 
-const BurgerConstructor = ({ bun, fillings, onPlaceOrder }) => {
-	const sum =
-		bun.price + fillings.reduce((result, current) => result + current.price, 0);
+import {
+	addIngredient,
+	removeIngredient,
+	moveIngredient,
+} from '../../services/constructorSlice';
+import { sendOrder } from '../../services/orderSlice';
+import styles from './burger-constructor.module.css';
+
+const BurgerConstructor = () => {
+	const dispatch = useDispatch();
+	const { bun, ingredients } = useSelector((state) => state.burgerConstructor);
+
+	const [, dropTarget] = useDrop({
+		accept: 'ingredient',
+		drop: (item) => {
+			dispatch(addIngredient(item));
+		},
+	});
+
+	const moveCard = (fromIndex, toIndex) => {
+		dispatch(moveIngredient({ fromIndex, toIndex }));
+	};
+
+	const handleRemove = (uid) => {
+		dispatch(removeIngredient(uid));
+	};
+
+	const orderTotal = useMemo(() => {
+		const fillingsTotal = ingredients.reduce((sum, item) => sum + item.price, 0);
+		const bunTotal = bun ? bun.price * 2 : 0;
+		return fillingsTotal + bunTotal;
+	}, [ingredients, bun]);
+
+	const handleOrder = () => {
+		if (!bun) return;
+		const ingredientIds = [
+			bun._id,
+			...ingredients.map((item) => item._id),
+			bun._id,
+		];
+		dispatch(sendOrder(ingredientIds));
+	};
 
 	return (
-		<section className={`${styles.burgerConstructor} mt-25 pl-4`}>
-			<ConstructorElement
-				extraClass='ml-8'
-				text={`${bun.name} (верх)`}
-				thumbnail={bun.image_mobile}
-				price={bun.price}
-				type='top'
-				isLocked={true}
-			/>
+		<section className={`${styles.burgerConstructor} mt-25 pl-4`} ref={dropTarget}>
+			{bun && (
+				<ConstructorElement
+					extraClass='ml-8'
+					text={`${bun.name} (верх)`}
+					thumbnail={bun.image_mobile}
+					price={bun.price}
+					type='top'
+					isLocked={true}
+				/>
+			)}
+
 			<ul className={styles.list}>
-				{fillings.map((item) => (
-					<li key={item._id}>
-						<DragIcon type='primary' />
-						<ConstructorElement
-							text={item.name}
-							thumbnail={item.image_mobile}
-							price={item.price}
-						/>
-					</li>
+				{ingredients.map((item, index) => (
+					<DraggableItem
+						key={item.uid}
+						item={item}
+						index={index}
+						moveCard={moveCard}
+						handleRemove={handleRemove}
+					/>
 				))}
 			</ul>
-			<ConstructorElement
-				extraClass='ml-8'
-				text={`${bun.name} (низ)`}
-				thumbnail={bun.image_mobile}
-				price={bun.price}
-				type='bottom'
-				isLocked={true}
-			/>
+
+			{bun && (
+				<ConstructorElement
+					extraClass='ml-8'
+					text={`${bun.name} (низ)`}
+					thumbnail={bun.image_mobile}
+					price={bun.price}
+					type='bottom'
+					isLocked={true}
+				/>
+			)}
+
 			<div className={`${styles.total} mt-10`}>
 				<span className='text text_type_digits-medium'>
-					{sum} <CurrencyIcon type='primary' className={styles.totalCurrency} />
+					{orderTotal}
+					<CurrencyIcon type='primary' className={styles.totalCurrency} />
 				</span>
 				<Button
 					htmlType='button'
 					type='primary'
 					size='large'
 					extraClass='ml-10'
-					onClick={onPlaceOrder}>
+					onClick={handleOrder}>
 					Оформить заказ
 				</Button>
 			</div>
@@ -59,10 +105,5 @@ const BurgerConstructor = ({ bun, fillings, onPlaceOrder }) => {
 	);
 };
 
-BurgerConstructor.propTypes = {
-	bun: IngredientType.isRequired,
-	fillings: PropTypes.arrayOf(IngredientType).isRequired,
-	onPlaceOrder: PropTypes.func.isRequired,
-};
 
 export default BurgerConstructor;
