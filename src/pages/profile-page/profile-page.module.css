@@ -1,0 +1,29 @@
+.main {
+    margin-top: 120px;
+    display: flex;
+    justify-content: center;
+    column-gap: 60px;
+}
+
+.side_panel {
+    width: 320px;
+    float: left;
+}
+
+.navigation_panel {
+    width: 320px;
+    text-align: left;
+    margin-bottom: 80px;
+}
+
+.outlet {
+    width: 480px;
+}
+
+.link {
+    text-decoration: none;
+    display: flex;
+	align-items: center;
+    height: 64px;
+    cursor: pointer;
+}
