@@ -1,23 +1,56 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import IngredientDetails from '../../components/ingredient-details/ingredient-details';
+import { fetchIngredients } from '../../services/ingredientsSlice';
+import styles from './ingredient-page.module.css';
 
 const IngredientPage = () => {
 	const { id } = useParams();
-	const ingredients = useSelector((state) => state.ingredients.items);
-	const ingredient = ingredients.find((item) => item._id === id);
+	const dispatch = useDispatch();
+	const {
+		items: ingredients,
+		loading,
+		error,
+	} = useSelector((state) => state.ingredients);
+	const [ingredient, setIngredient] = useState(null);
 
-	if (!ingredient) {
+	useEffect(() => {
+		if (!ingredients.length) {
+			dispatch(fetchIngredients());
+		}
+	}, [dispatch, ingredients.length]);
+
+	useEffect(() => {
+		if (ingredients.length && id) {
+			const found = ingredients.find((item) => item._id === id);
+			setIngredient(found || null);
+		}
+	}, [ingredients, id]);
+
+	if (loading || !ingredients.length || !ingredient) {
 		return (
-			<p className='pt-20 text text_type_main-medium'>Ингредиент не найден</p>
+			<p className='pt-20 text text_type_main-medium'>
+				Загрузка ингредиентов...
+			</p>
+		);
+	}
+
+	if (error) {
+		return (
+			<p className='pt-20 text text_type_main-medium'>Ошибка загрузки данных</p>
 		);
 	}
 
 	return (
-		<section className='pt-20'>
-			<IngredientDetails ingredient={ingredient} />
-		</section>
+		<main className='pt-20'>
+			<section className={`${styles.container} text text_type_main-default`}>
+				<h1 className='text text_type_main-large text-center mb-8'>
+					Детали ингредиента
+				</h1>
+				<IngredientDetails ingredient={ingredient} />
+			</section>
+		</main>
 	);
 };
 

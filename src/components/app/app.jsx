@@ -1,12 +1,12 @@
 import styles from './app.module.css';
 import { useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import AppHeader from '../app-header/app-header';
 
 import Modal from '../modal/modal';
-import IngredientDetails from '../ingredient-details/ingredient-details';
+import IngredientModal from '../modal/ingredient-modal';
 import OrderDetails from '../order-details/order-details';
 
 import LoginPage from '../../pages/login-page/login-page';
@@ -27,6 +27,7 @@ import ProtectedRouteElement from '../protected-route/protected-route';
 export const App = () => {
 	const dispatch = useDispatch();
 	const location = useLocation();
+	const navigate = useNavigate();
 	const background = location.state?.background;
 
 	const { item: selectedIngredient } = useSelector(
@@ -42,6 +43,7 @@ export const App = () => {
 	const closeModal = () => {
 		if (selectedIngredient) dispatch(closeIngredient());
 		if (orderNumber) dispatch(clearOrder());
+		navigate(-1);
 	};
 
 	if (loading) {
@@ -109,16 +111,9 @@ export const App = () => {
 				<Route path='*' element={<NotFoundPage />} />
 			</Routes>
 
-			{background && selectedIngredient && (
+			{background && (
 				<Routes>
-					<Route
-						path='/ingredients/:id'
-						element={
-							<Modal onClose={closeModal} title='Детали ингредиента'>
-								<IngredientDetails />
-							</Modal>
-						}
-					/>
+					<Route path='/ingredients/:id' element={<IngredientModal />} />
 				</Routes>
 			)}
 
