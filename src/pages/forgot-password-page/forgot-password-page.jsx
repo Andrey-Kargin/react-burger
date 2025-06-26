@@ -1,27 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
 	Button,
 	Input,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import styles from './forgot-password-page.module.css'
+import styles from './forgot-password-page.module.css';
+import { request } from '../../services/api';
+import { useForm } from '../../hooks/useForm';
 
 const ForgotPasswordPage = () => {
-	const [email, setEmail] = useState('');
+	const { values, handleChange } = useForm({ email: '' });
 	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			const res = await fetch(
-				'https://norma.nomoreparties.space/api/password-reset',
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email }),
-				}
-			);
+			const res = await request('/password-reset', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ email: values.email }),
+			});
 			const data = await res.json();
 			if (data.success) {
 				sessionStorage.setItem('resetAllowed', 'true'); // защита прямого входа
@@ -40,15 +39,16 @@ const ForgotPasswordPage = () => {
 					<Input
 						type='email'
 						placeholder='Укажите e-mail'
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						name='email'
+						value={values.email}
+						onChange={handleChange}
 					/>
 				</div>
 				<Button htmlType='submit' type='primary' size='medium'>
 					Восстановить
 				</Button>
 			</form>
-				<p className='text text_type_main-default text_color_inactive mt-20'>
+			<p className='text text_type_main-default text_color_inactive mt-20'>
 				Вспомнили пароль?{' '}
 				<Link to='/login' className='text text_color_accent'>
 					Войти

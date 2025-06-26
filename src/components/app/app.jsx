@@ -23,6 +23,7 @@ import { closeIngredient } from '../../services/ingredientDetailsSlice';
 import { clearOrder } from '../../services/orderSlice';
 
 import ProtectedRouteElement from '../protected-route/protected-route';
+import { checkAuth } from '../../services/authSlice';
 
 export const App = () => {
 	const dispatch = useDispatch();
@@ -38,12 +39,17 @@ export const App = () => {
 
 	useEffect(() => {
 		dispatch(fetchIngredients());
+		dispatch(checkAuth());
 	}, [dispatch]);
 
 	const closeModal = () => {
 		if (selectedIngredient) dispatch(closeIngredient());
 		if (orderNumber) dispatch(clearOrder());
-		navigate(-1);
+		if (background) {
+			navigate(-1);
+		} else {
+			navigate('/');
+		}
 	};
 
 	if (loading) {

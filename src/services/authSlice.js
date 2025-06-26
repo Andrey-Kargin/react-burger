@@ -58,6 +58,31 @@ export const fetchUser = createAsyncThunk('auth/fetchUser', async () => {
 	return data.user;
 });
 
+export const checkAuth = createAsyncThunk(
+	'auth/checkAuth',
+	async (_, { dispatch, rejectWithValue }) => {
+		const accessToken = localStorage.getItem('accessToken');
+		if (!accessToken) {
+			return rejectWithValue('No token');
+		}
+
+		try {
+			const data = await request('/auth/user', {
+				headers: {
+					Authorization: accessToken,
+					'Content-Type': 'application/json',
+				},
+			});
+
+			return data.user;
+		} catch (err) {
+			localStorage.removeItem('accessToken');
+			localStorage.removeItem('refreshToken');
+			return rejectWithValue(err.message);
+		}
+	}
+);
+
 const authSlice = createSlice({
 	name: 'auth',
 	initialState,
@@ -91,6 +116,19 @@ const authSlice = createSlice({
 			.addCase(logoutUser.fulfilled, (state) => {
 				state.user = null;
 				state.isAuthenticated = false;
+			})
+			.addCase(checkAuth.pending, (state) => {
+				state.loading = true;
+			})
+			.addCase(checkAuth.fulfilled, (state, action) => {
+				state.loading = false;
+				state.user = action.payload;
+				state.isAuthenticated = true;
+			})
+			.addCase(checkAuth.rejected, (state) => {
+				state.loading = false;
+				state.user = null;
+				state.isAuthenticated = false;
 			});
 	},
 });
@@ -99,7 +137,7 @@ export const updateUser = createAsyncThunk(
 	'auth/updateUser',
 	async ({ email, name, password }) => {
 		const accessToken = localStorage.getItem('accessToken');
-		const res = await fetch('https://norma.nomoreparties.space/api/auth/user', {
+		const res = await request('/auth/user', {
 			method: 'PATCH',
 			headers: {
 				Authorization: accessToken,

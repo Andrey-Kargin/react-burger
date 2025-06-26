@@ -1,10 +1,7 @@
+import { checkResponse } from '../utils/checkResponse';
+
 const BASE_URL = 'https://norma.nomoreparties.space/api';
 
-export const request = async (endpoint, options = {}) => {
-	const res = await fetch(`${BASE_URL}${endpoint}`, options);
-	const data = await res.json();
-	if (!res.ok) {
-		throw new Error(data.message || 'Ошибка сервера');
-	}
-	return data;
+export const request = (endpoint, options = {}) => {
+	return fetch(`${BASE_URL}${endpoint}`, options).then(checkResponse);
 };

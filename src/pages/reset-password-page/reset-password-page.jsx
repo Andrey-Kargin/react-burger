@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
 	Button,
 	Input,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
-import styles from './reset-password-page.module.css'
+import styles from './reset-password-page.module.css';
+import { request } from '../../services/api';
+import { useForm } from '../../hooks/useForm';
 
 const ResetPasswordPage = () => {
-	const [password, setPassword] = useState('');
-	const [token, setToken] = useState('');
+	const { values, handleChange } = useForm({ password: '', token: '' });
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -21,14 +22,14 @@ const ResetPasswordPage = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			const res = await fetch(
-				'https://norma.nomoreparties.space/api/password-reset/reset',
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ password, token }),
-				}
-			);
+			const res = await request('/password-reset', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					password: values.password,
+					token: values.token,
+				}),
+			});
 			const data = await res.json();
 			if (data.success) {
 				sessionStorage.removeItem('resetAllowed');
@@ -47,16 +48,18 @@ const ResetPasswordPage = () => {
 					<Input
 						type='password'
 						placeholder='Новый пароль'
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
+						name='password'
+						value={values.password}
+						onChange={handleChange}
 					/>
 				</div>
 				<div className='mb-6'>
 					<Input
 						type='text'
 						placeholder='Код из письма'
-						value={token}
-						onChange={(e) => setToken(e.target.value)}
+						name='token'
+						value={values.token}
+						onChange={handleChange}
 					/>
 				</div>
 				<Button htmlType='submit' type='primary' size='medium'>

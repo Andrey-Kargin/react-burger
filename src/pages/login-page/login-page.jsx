@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, resetError } from '../../services/authSlice';
 import { Navigate, Link, useLocation } from 'react-router-dom';
+import { useForm } from '../../hooks/useForm';
 import {
 	Button,
 	Input,
@@ -13,8 +14,7 @@ const LoginPage = () => {
 	const dispatch = useDispatch();
 	const location = useLocation();
 	const { isAuthenticated, error } = useSelector((state) => state.auth);
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+	const { values, handleChange } = useForm({ email: '', password: '' });
 
 	useEffect(() => {
 		dispatch(resetError());
@@ -22,7 +22,7 @@ const LoginPage = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		dispatch(loginUser({ email, password }));
+		dispatch(loginUser(values));
 	};
 
 	const from = location.state?.from?.pathname || '/';
@@ -39,16 +39,18 @@ const LoginPage = () => {
 					<Input
 						type='email'
 						placeholder='E-mail'
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						name='email'
+						value={values.email}
+						onChange={handleChange}
 					/>
 				</div>
 				<div className='mb-6'>
 					<Input
 						type='password'
 						placeholder='Пароль'
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
+						name='password'
+						value={values.password}
+						onChange={handleChange}
 					/>
 				</div>
 				<Button htmlType='submit' type='primary' size='medium'>
