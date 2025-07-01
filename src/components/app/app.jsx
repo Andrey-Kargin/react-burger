@@ -22,7 +22,7 @@ import { fetchIngredients } from '../../services/ingredientsSlice';
 import { closeIngredient } from '../../services/ingredientDetailsSlice';
 import { clearOrder } from '../../services/orderSlice';
 
-import ProtectedRouteElement from '../protected-route/protected-route';
+import ProtectedRoute from '../protected-route/protected-route';
 import { checkAuth } from '../../services/authSlice';
 
 export const App = () => {
@@ -34,8 +34,8 @@ export const App = () => {
 	const { item: selectedIngredient } = useSelector(
 		(state) => state.ingredientDetails
 	);
-	const { number: orderNumber } = useSelector((state) => state.order);
 	const { error, loading } = useSelector((state) => state.ingredients);
+	const { isModalOpen } = useSelector((state) => state.order);
 
 	useEffect(() => {
 		dispatch(fetchIngredients());
@@ -43,13 +43,17 @@ export const App = () => {
 	}, [dispatch]);
 
 	const closeModal = () => {
-		if (selectedIngredient) dispatch(closeIngredient());
-		if (orderNumber) dispatch(clearOrder());
-		if (background) {
-			navigate(-1);
-		} else {
-			navigate('/');
+		if (selectedIngredient) {
+			dispatch(closeIngredient());
+			if (background) {
+				navigate(-1);
+			} else {
+				navigate('/');
+			}
+			return;
 		}
+
+		dispatch(clearOrder());
 	};
 
 	if (loading) {
@@ -76,41 +80,41 @@ export const App = () => {
 				<Route
 					path='/login'
 					element={
-						<ProtectedRouteElement onlyUnAuth={true}>
+						<ProtectedRoute anonymous={true}>
 							<LoginPage />
-						</ProtectedRouteElement>
+						</ProtectedRoute>
 					}
 				/>
 				<Route
 					path='/register'
 					element={
-						<ProtectedRouteElement onlyUnAuth={true}>
+						<ProtectedRoute anonymous={true}>
 							<RegisterPage />
-						</ProtectedRouteElement>
+						</ProtectedRoute>
 					}
 				/>
 				<Route
 					path='/forgot-password'
 					element={
-						<ProtectedRouteElement onlyUnAuth={true}>
+						<ProtectedRoute anonymous={true}>
 							<ForgotPasswordPage />
-						</ProtectedRouteElement>
+						</ProtectedRoute>
 					}
 				/>
 				<Route
 					path='/reset-password'
 					element={
-						<ProtectedRouteElement onlyUnAuth={true}>
+						<ProtectedRoute anonymous={true}>
 							<ResetPasswordPage />
-						</ProtectedRouteElement>
+						</ProtectedRoute>
 					}
 				/>
 				<Route
 					path='/profile/*'
 					element={
-						<ProtectedRouteElement>
+						<ProtectedRoute>
 							<ProfilePage />
-						</ProtectedRouteElement>
+						</ProtectedRoute>
 					}
 				/>
 				<Route path='/ingredients/:id' element={<IngredientPage />} />
@@ -123,7 +127,7 @@ export const App = () => {
 				</Routes>
 			)}
 
-			{orderNumber && (
+			{isModalOpen && (
 				<Modal onClose={closeModal}>
 					<OrderDetails />
 				</Modal>

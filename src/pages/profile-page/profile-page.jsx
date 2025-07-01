@@ -5,7 +5,7 @@ import {
 	PasswordInput,
 	Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser, updateUser } from '../../services/authSlice';
 import { useEffect, useRef, useCallback, useState } from 'react';
@@ -21,11 +21,11 @@ const ProfilePage = () => {
 	const navigate = useNavigate();
 	const nameRef = useRef(null);
 
-	const { user } = useSelector((state) => state.auth);
-
 	const [values, setValues] = useState({ name: '', email: '', password: '' });
 	const [isChanged, setIsChanged] = useState(false);
 	const [disabled, setDisabled] = useState(true);
+
+	const { user, isAuthenticated } = useSelector((state) => state.auth);
 
 	usePageTitle('Профиль');
 
@@ -72,9 +72,9 @@ const ProfilePage = () => {
 		navigate('/login');
 	};
 
-	useEffect(() => {
-		if (!disabled) nameRef.current?.focus();
-	}, [disabled]);
+	if (!isAuthenticated) {
+		return <Navigate to='/login' replace />;
+	}
 
 	return (
 		<main className={styles.main}>

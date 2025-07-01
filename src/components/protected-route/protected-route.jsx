@@ -1,21 +1,20 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-const ProtectedRouteElement = ({ children, onlyUnAuth = false }) => {
+const ProtectedRoute = ({ children, anonymous = false }) => {
+	const isLoggedIn = useSelector((store) => store.auth.isAuthenticated);
 	const location = useLocation();
-	const { isAuthenticated } = useSelector((state) => state.auth);
+	const from = location.state?.from || '/';
 
-	// Страница доступна только неавторизованным
-	if (onlyUnAuth && isAuthenticated) {
-		return <Navigate to='/' replace />;
+	if (anonymous && isLoggedIn) {
+		return <Navigate to={from} />;
 	}
 
-	// Страница доступна только авторизованным
-	if (!onlyUnAuth && !isAuthenticated) {
-		return <Navigate to='/login' replace state={{ from: location }} />;
+	if (anonymous && isLoggedIn) {
+		return <Navigate to='/login' state={{ from: location }} />;
 	}
 
 	return children;
 };
 
-export default ProtectedRouteElement;
+export default ProtectedRoute;

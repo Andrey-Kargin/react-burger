@@ -4,48 +4,49 @@ import { request } from './api';
 export const sendOrder = createAsyncThunk(
 	'order/sendOrder',
 	async (ingredientIds) => {
-		const res = await request('/orders', {
+		const data = await request('/orders', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ ingredients: ingredientIds }),
 		});
-		if (!res.ok) {
-			throw new Error('Ошибка при создании заказа');
-		}
-		const data = await res.json();
 		return data.order.number;
 	}
 );
-
 const orderSlice = createSlice({
 	name: 'order',
 	initialState: {
 		number: null,
-		loading: false,
+		isLoading: false,
 		error: null,
+		isModalOpen: false,
 	},
 	reducers: {
 		clearOrder(state) {
 			state.number = null;
+			state.isLoading = false;
+			state.error = null;
+			state.isModalOpen = false;
 		},
 	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(sendOrder.pending, (state) => {
-				state.loading = true;
-				state.error = null;
+				state.isLoading = true;
+				state.isModalOpen = false;
 			})
 			.addCase(sendOrder.fulfilled, (state, action) => {
-				state.loading = false;
+				state.isLoading = false;
 				state.number = action.payload;
+				state.isModalOpen = true;
 			})
 			.addCase(sendOrder.rejected, (state, action) => {
-				state.loading = false;
-				state.error = action.payload;
+				state.isLoading = false;
+				state.number = null;
+				state.error = action.error.message;
+				state.isModalOpen = false;
 			});
 	},
 });
-
 export const { clearOrder } = orderSlice.actions;
 
 export default orderSlice.reducer;
