@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children, anonymous = false }) => {
 		return <Navigate to={from} />;
 	}
 
-	if (anonymous && isLoggedIn) {
+	if (!anonymous && !isLoggedIn) {
 		return <Navigate to='/login' state={{ from: location }} />;
 	}
 
