@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useDrop } from 'react-dnd';
 import { useMemo } from 'react';
 import { DraggableItem } from './draggable-item';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
 	addIngredient,
@@ -18,6 +19,9 @@ import styles from './burger-constructor.module.css';
 
 const BurgerConstructor = () => {
 	const dispatch = useDispatch();
+	const { isAuthenticated } = useSelector((state) => state.auth);
+	const navigate = useNavigate();
+	const location = useLocation();
 	const { bun, ingredients } = useSelector((state) => state.burgerConstructor);
 
 	const [, dropTarget] = useDrop({
@@ -36,13 +40,21 @@ const BurgerConstructor = () => {
 	};
 
 	const orderTotal = useMemo(() => {
-		const fillingsTotal = ingredients.reduce((sum, item) => sum + item.price, 0);
+		const fillingsTotal = ingredients.reduce(
+			(sum, item) => sum + item.price,
+			0
+		);
 		const bunTotal = bun ? bun.price * 2 : 0;
 		return fillingsTotal + bunTotal;
 	}, [ingredients, bun]);
 
 	const handleOrder = () => {
+		if (!isAuthenticated) {
+			navigate('/login', { state: { from: location } });
+			return;
+		}
 		if (!bun) return;
+
 		const ingredientIds = [
 			bun._id,
 			...ingredients.map((item) => item._id),
@@ -52,7 +64,9 @@ const BurgerConstructor = () => {
 	};
 
 	return (
-		<section className={`${styles.burgerConstructor} mt-25 pl-4`} ref={dropTarget}>
+		<section
+			className={`${styles.burgerConstructor} mt-25 pl-4`}
+			ref={dropTarget}>
 			{bun && (
 				<ConstructorElement
 					extraClass='ml-8'
@@ -104,6 +118,5 @@ const BurgerConstructor = () => {
 		</section>
 	);
 };
-
 
 export default BurgerConstructor;

@@ -1,58 +1,133 @@
 import styles from './app.module.css';
 import { useEffect } from 'react';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import AppHeader from '../app-header/app-header';
-import BurgerIngredients from '../burger-ingredients/burger-ingredients';
-import BurgerConstructor from '../burger-constructor/burger-constructor';
 
 import Modal from '../modal/modal';
-import IngredientDetails from '../ingredient-details/ingredient-details';
+import IngredientModal from '../modal/ingredient-modal';
 import OrderDetails from '../order-details/order-details';
+
+import LoginPage from '../../pages/login-page/login-page';
+import RegisterPage from '../../pages/register-page/register-page';
+import ForgotPasswordPage from '../../pages/forgot-password-page/forgot-password-page';
+import ResetPasswordPage from '../../pages/reset-password-page/reset-password-page';
+import ProfilePage from '../../pages/profile-page/profile-page';
+import IngredientPage from '../../pages/ingredients-page/ingredient-page';
+import NotFoundPage from '../../pages/not-found-page/not-found-page';
+import HomePage from '../../pages/home-page/home-page';
 
 import { fetchIngredients } from '../../services/ingredientsSlice';
 import { closeIngredient } from '../../services/ingredientDetailsSlice';
 import { clearOrder } from '../../services/orderSlice';
 
+import ProtectedRoute from '../protected-route/protected-route';
+import { checkAuth } from '../../services/authSlice';
+
 export const App = () => {
 	const dispatch = useDispatch();
+	const location = useLocation();
+	const navigate = useNavigate();
+	const background = location.state?.background;
 
-	const { item: selectedIngredient } = useSelector((state) => state.ingredientDetails);
-	const { number: orderNumber } = useSelector((state) => state.order);
+	const { item: selectedIngredient } = useSelector(
+		(state) => state.ingredientDetails
+	);
 	const { error, loading } = useSelector((state) => state.ingredients);
+	const { isModalOpen } = useSelector((state) => state.order);
 
 	useEffect(() => {
 		dispatch(fetchIngredients());
+		dispatch(checkAuth());
 	}, [dispatch]);
 
 	const closeModal = () => {
-		if (selectedIngredient) dispatch(closeIngredient());
-		if (orderNumber) dispatch(clearOrder());
+		if (selectedIngredient) {
+			dispatch(closeIngredient());
+			if (background) {
+				navigate(-1);
+			} else {
+				navigate('/');
+			}
+			return;
+		}
+
+		dispatch(clearOrder());
 	};
 
 	if (loading) {
-		return <p className="text text_type_main-medium p-10">Загрузка ингредиентов...</p>;
+		return (
+			<p className='text text_type_main-medium p-10'>
+				Загрузка ингредиентов...
+			</p>
+		);
 	}
 
 	if (error) {
-		return <p className="text text_type_main-medium p-10">Ошибка загрузки ингредиентов</p>;
+		return (
+			<p className='text text_type_main-medium p-10'>
+				Ошибка загрузки ингредиентов
+			</p>
+		);
 	}
 
 	return (
 		<div className={styles.app}>
 			<AppHeader />
-			<main className={styles.main}>
-				<BurgerIngredients />
-				<BurgerConstructor />
-			</main>
+			<Routes location={background || location}>
+				<Route path='/' element={<HomePage />} />
+				<Route
+					path='/login'
+					element={
+						<ProtectedRoute anonymous={true}>
+							<LoginPage />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path='/register'
+					element={
+						<ProtectedRoute anonymous={true}>
+							<RegisterPage />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path='/forgot-password'
+					element={
+						<ProtectedRoute anonymous={true}>
+							<ForgotPasswordPage />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path='/reset-password'
+					element={
+						<ProtectedRoute anonymous={true}>
+							<ResetPasswordPage />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path='/profile/*'
+					element={
+						<ProtectedRoute>
+							<ProfilePage />
+						</ProtectedRoute>
+					}
+				/>
+				<Route path='/ingredients/:id' element={<IngredientPage />} />
+				<Route path='*' element={<NotFoundPage />} />
+			</Routes>
 
-			{selectedIngredient && (
-				<Modal onClose={closeModal} title="Детали ингредиента">
-					<IngredientDetails ingredient={selectedIngredient} />
-				</Modal>
+			{background && (
+				<Routes>
+					<Route path='/ingredients/:id' element={<IngredientModal />} />
+				</Routes>
 			)}
 
-			{orderNumber && (
+			{isModalOpen && (
 				<Modal onClose={closeModal}>
 					<OrderDetails />
 				</Modal>
