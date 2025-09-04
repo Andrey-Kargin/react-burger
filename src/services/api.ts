@@ -2,7 +2,7 @@ import { checkResponse } from '../utils/checkResponse';
 
 const BASE_URL = 'https://norma.nomoreparties.space/api';
 
-export const request = <T = any>(
+export const request = <T = unknown>(
 	endpoint: string,
 	options: RequestInit = {}
 ): Promise<T> => {

@@ -1,18 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import OrderInfo from '../../components/order-info/order-info';
-import { useSelector } from 'react-redux';
 import { request } from '../../services/api';
 import type { TIngredient, TOrder } from '../../utils/types';
 import styles from './order-page.module.css';
+import { useAppSelector } from '../../services/store';
 
 const OrderPage: React.FC = () => {
 	const { number } = useParams<{ number: string }>();
 	const n = Number(number);
 
-	const feed = useSelector((s: any) => s.feed) as { orders: TOrder[] };
-	const prof = useSelector((s: any) => s.profileOrders) as { orders: TOrder[] };
-	const { items: allIngredients } = useSelector((s: any) => s.ingredients) as {
+	const feed = useAppSelector((s) => s.feed) as { orders: TOrder[] };
+	const prof = useAppSelector((s) => s.profileOrders) as { orders: TOrder[] };
+	const { items: allIngredients } = useAppSelector((s) => s.ingredients) as {
 		items: TIngredient[];
 	};
 

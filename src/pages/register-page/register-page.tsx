@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../services/authSlice';
 import { Navigate, Link } from 'react-router-dom';
 import {
 	Button,
 	Input,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './register-page.module.css';
+import { useAppDispatch, useAppSelector } from '../../services/store';
+import { registerUser } from '../../services/authSlice';
 
 const RegisterPage: React.FC = () => {
-	const dispatch = useDispatch();
-	const { isAuthenticated, error } = useSelector(
-		(state: any) => state.auth
-	) as {
+	const dispatch = useAppDispatch();
+	const { isAuthenticated, error } = useAppSelector((state) => state.auth) as {
 		isAuthenticated: boolean;
 		error: string | null;
 	};
@@ -23,7 +21,7 @@ const RegisterPage: React.FC = () => {
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		(dispatch as any)(registerUser({ email, password, name }));
+		dispatch(registerUser({ email, password, name }));
 	};
 
 	if (isAuthenticated) {

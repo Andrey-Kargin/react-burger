@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 
-import layout from '../profile-page/profile-page.module.css'; // используем те же отступы/сетки
+import layout from '../profile-page/profile-page.module.css';
 import styles from './profile-orders-page.module.css';
 
 import { wsActions as profileWsActions } from '../../services/ws/profileOrdersSlice';
 import { logoutUser } from '../../services/authSlice';
 import OrderCard from '../../components/order-card/order-card';
 import type { TIngredient, TOrder } from '../../utils/types';
+import { useAppDispatch, useAppSelector } from '../../services/store';
 
 const navLinks = [
 	{ to: '/profile', text: 'Профиль' },
@@ -16,26 +16,26 @@ const navLinks = [
 ];
 
 const ProfileOrdersPage: React.FC = () => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const { orders } = useSelector((s: any) => s.profileOrders) as {
+	const { orders } = useAppSelector((s) => s.profileOrders) as {
 		orders: TOrder[];
 	};
-	const { items: allIngredients } = useSelector((s: any) => s.ingredients) as {
+	const { items: allIngredients } = useAppSelector((s) => s.ingredients) as {
 		items: TIngredient[];
 	};
 
 	useEffect(() => {
-		dispatch({ type: profileWsActions.connect.type });
+		dispatch(profileWsActions.connect());
 		return () => {
-			dispatch({ type: profileWsActions.disconnect.type });
+			dispatch(profileWsActions.disconnect());
 		};
 	}, [dispatch]);
 
 	const signOut = async () => {
-		await (dispatch as any)(logoutUser());
+		await dispatch(logoutUser());
 		navigate('/login');
 	};
 

@@ -1,34 +1,29 @@
-import { useState, useRef, RefObject } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useRef, type RefObject } from 'react';
 import { Tab } from '@ya.praktikum/react-developer-burger-ui-components';
 import { IngredientCard } from './ingredient-card';
 import styles from './burger-ingredients.module.css';
 import { useTabObserver } from '../../hooks/useTabObserver';
+import { useAppSelector } from '../../services/store';
+import type { TIngredient } from '../../services/ingredientsSlice';
 
 type TabType = 'bun' | 'sauce' | 'main';
-
-type CategoryRefs = {
-	current: Record<TabType, RefObject<HTMLDivElement>>;
-};
 
 function BurgerIngredients() {
 	const [current, setCurrent] = useState<TabType>('bun');
 
-	const { items: ingredients } = useSelector(
-		(state: any) => state.ingredients
-	) as {
-		items: any[];
-	};
+	const ingredients = useAppSelector(
+		(s) => s.ingredients.items
+	) as TIngredient[];
 
 	const categoryRefs = useRef<Record<TabType, RefObject<HTMLDivElement>>>({
 		bun: useRef<HTMLDivElement>(null),
 		sauce: useRef<HTMLDivElement>(null),
 		main: useRef<HTMLDivElement>(null),
-	}) as CategoryRefs;
+	});
 
-	const { setManualScroll } = useTabObserver<HTMLDivElement>(
+	const { setManualScroll } = useTabObserver<TabType, HTMLDivElement>(
 		categoryRefs,
-		setCurrent as unknown as (key: string) => void
+		(key) => setCurrent(key)
 	);
 
 	const tabs: Array<{ type: TabType; label: string }> = [
@@ -70,8 +65,8 @@ function BurgerIngredients() {
 						</h2>
 						<ul className={`${styles.ingredientGrid} pl-4 pr-4`}>
 							{ingredients
-								?.filter((item: any) => item.type === tab.type)
-								.map((ingredient: any) => (
+								?.filter((item) => item.type === tab.type)
+								.map((ingredient) => (
 									<IngredientCard
 										key={ingredient._id}
 										ingredient={ingredient}

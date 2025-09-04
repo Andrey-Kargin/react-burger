@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../services/store';
 
 type ProtectedRouteProps = {
 	children: React.ReactElement;
@@ -11,11 +11,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 	children,
 	anonymous = false,
 }) => {
-	const isLoggedIn = useSelector(
-		(store: any) => store.auth.isAuthenticated
-	) as boolean;
+	const isLoggedIn = useAppSelector((store) => store.auth.isAuthenticated);
 	const location = useLocation();
-	const from = (location.state as { from?: string })?.from || '/';
+
+	const from =
+		(location.state as { from?: { pathname?: string } } | undefined)?.from
+			?.pathname || '/';
 
 	if (anonymous && isLoggedIn) {
 		return <Navigate to={from} />;

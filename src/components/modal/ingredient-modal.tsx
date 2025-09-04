@@ -1,37 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 
 import Modal from './modal';
 import IngredientDetails from '../ingredient-details/ingredient-details';
 import { fetchIngredients } from '../../services/ingredientsSlice';
 import { closeIngredient } from '../../services/ingredientDetailsSlice';
 
-type TIngredientType = 'bun' | 'sauce' | 'main';
-
-interface TIngredient {
-	_id: string;
-	name: string;
-	type: TIngredientType;
-	proteins: number;
-	fat: number;
-	carbohydrates: number;
-	calories: number;
-	price: number;
-	image: string;
-	image_mobile: string;
-	image_large: string;
-	__v?: number;
-	uid?: string;
-}
+import { useAppDispatch, useAppSelector } from '../../services/store';
+import type { TIngredient } from '../../utils/types';
 
 const IngredientModal: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
-	const { items: ingredients, loading } = useSelector(
-		(state: any) => state.ingredients
+	const { items: ingredients, loading } = useAppSelector(
+		(state) => state.ingredients
 	);
 
 	const ingredient: TIngredient | undefined = ingredients?.find(
@@ -40,12 +24,12 @@ const IngredientModal: React.FC = () => {
 
 	useEffect(() => {
 		if (!ingredients?.length) {
-			dispatch(fetchIngredients() as any);
+			dispatch(fetchIngredients());
 		}
 	}, [dispatch, ingredients?.length]);
 
 	const handleClose = () => {
-		dispatch(closeIngredient() as any);
+		dispatch(closeIngredient());
 		navigate(-1);
 	};
 

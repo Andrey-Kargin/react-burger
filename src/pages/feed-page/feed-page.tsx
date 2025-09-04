@@ -1,25 +1,18 @@
 import React, { useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../services/store';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './feed-page.module.css';
 
 import OrderCard from '../../components/order-card/order-card';
 import { wsActions as feedWsActions } from '../../services/ws/feedSlice';
-import type { TIngredient, TOrder } from '../../utils/types';
 
 const FeedPage: React.FC = () => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const location = useLocation();
 
-	const { orders, total, totalToday } = useSelector((s: any) => s.feed) as {
-		orders: TOrder[];
-		total: number;
-		totalToday: number;
-	};
+	const { orders, total, totalToday } = useAppSelector((s) => s.feed);
 
-	const { items: allIngredients } = useSelector((s: any) => s.ingredients) as {
-		items: TIngredient[];
-	};
+	const { items: allIngredients } = useAppSelector((s) => s.ingredients);
 
 	useEffect(() => {
 		dispatch({ type: feedWsActions.connect.type });

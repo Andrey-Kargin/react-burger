@@ -1,24 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import styles from './ingredient-details.module.css';
-
-type TIngredientType = 'bun' | 'sauce' | 'main';
-
-export interface TIngredient {
-	_id: string;
-	name: string;
-	type: TIngredientType;
-	proteins: number;
-	fat: number;
-	carbohydrates: number;
-	calories: number;
-	price: number;
-	image: string;
-	image_mobile: string;
-	image_large: string;
-	__v?: number;
-	uid?: string;
-}
+import { useAppSelector } from '../../services/store';
+import type { TIngredient } from '../../utils/types';
 
 type IngredientDetailsProps = {
 	ingredient?: TIngredient | null;
@@ -27,8 +10,8 @@ type IngredientDetailsProps = {
 const IngredientDetails: React.FC<IngredientDetailsProps> = ({
 	ingredient,
 }) => {
-	const reduxIngredient = useSelector(
-		(state: any) => state.ingredientDetails.item
+	const reduxIngredient = useAppSelector(
+		(state) => state.ingredientDetails.item
 	) as TIngredient | null | undefined;
 
 	const item = ingredient ?? reduxIngredient;

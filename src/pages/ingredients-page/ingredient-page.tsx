@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+
 import IngredientDetails from '../../components/ingredient-details/ingredient-details';
 import { fetchIngredients } from '../../services/ingredientsSlice';
 import styles from './ingredient-page.module.css';
-import { TIngredient } from '../../utils/types';
+
+import { useAppDispatch, useAppSelector } from '../../services/store';
+import type { TIngredient } from '../../utils/types';
 
 const IngredientPage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 
 	const {
 		items: ingredients,
 		loading,
 		error,
-	} = useSelector((state: any) => state.ingredients) as {
+	} = useAppSelector((state) => state.ingredients) as {
 		items: TIngredient[];
 		loading: boolean;
 		error: string | null;
@@ -24,7 +26,7 @@ const IngredientPage: React.FC = () => {
 
 	useEffect(() => {
 		if (!ingredients.length) {
-			(dispatch as any)(fetchIngredients());
+			dispatch(fetchIngredients());
 		}
 	}, [dispatch, ingredients.length]);
 

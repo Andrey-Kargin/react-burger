@@ -51,8 +51,9 @@ export const registerUser = createAsyncThunk<
 		localStorage.setItem('refreshToken', data.refreshToken);
 		localStorage.setItem('accessToken', data.accessToken);
 		return data.user;
-	} catch (e: any) {
-		return rejectWithValue(e?.message ?? 'Register error');
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : 'Register error';
+		return rejectWithValue(message);
 	}
 });
 
@@ -70,8 +71,9 @@ export const loginUser = createAsyncThunk<
 		localStorage.setItem('refreshToken', data.refreshToken);
 		localStorage.setItem('accessToken', data.accessToken);
 		return data.user;
-	} catch (e: any) {
-		return rejectWithValue(e?.message ?? 'Login error');
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : 'Login error';
+		return rejectWithValue(message);
 	}
 });
 
@@ -87,11 +89,12 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
 			});
 			localStorage.removeItem('accessToken');
 			localStorage.removeItem('refreshToken');
-		} catch (e: any) {
+		} catch (e: unknown) {
 			// Даже если запрос упал — всё равно чистим локалсторадж
 			localStorage.removeItem('accessToken');
 			localStorage.removeItem('refreshToken');
-			return rejectWithValue(e?.message ?? 'Logout error');
+			const message = e instanceof Error ? e.message : 'Logout error';
+			return rejectWithValue(message);
 		}
 	}
 );
@@ -108,8 +111,9 @@ export const fetchUser = createAsyncThunk<TUser, void, { rejectValue: string }>(
 				},
 			});
 			return data.user;
-		} catch (e: any) {
-			return rejectWithValue(e?.message ?? 'Fetch user error');
+		} catch (e: unknown) {
+			const message = e instanceof Error ? e.message : 'Fetch user error';
+			return rejectWithValue(message);
 		}
 	}
 );
@@ -130,10 +134,11 @@ export const checkAuth = createAsyncThunk<TUser, void, { rejectValue: string }>(
 				},
 			});
 			return data.user;
-		} catch (err: any) {
+		} catch (e: unknown) {
 			localStorage.removeItem('accessToken');
 			localStorage.removeItem('refreshToken');
-			return rejectWithValue(err?.message ?? 'Auth check failed');
+			const message = e instanceof Error ? e.message : 'Auth check failed';
+			return rejectWithValue(message);
 		}
 	}
 );
@@ -225,8 +230,9 @@ export const updateUser = createAsyncThunk<
 			body: JSON.stringify({ email, name, password }),
 		});
 		return data.user;
-	} catch (e: any) {
-		return rejectWithValue(e?.message ?? 'Update user error');
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : 'Update user error';
+		return rejectWithValue(message);
 	}
 });
 

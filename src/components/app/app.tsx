@@ -1,7 +1,6 @@
 import styles from './app.module.css';
 import { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 
 import AppHeader from '../app-header/app-header';
 
@@ -29,30 +28,31 @@ import { clearOrder } from '../../services/orderSlice';
 
 import ProtectedRoute from '../protected-route/protected-route';
 import { checkAuth } from '../../services/authSlice';
+
+import { useAppDispatch, useAppSelector } from '../../services/store';
 import type { TLocationState } from '../../utils/types';
 
-export const App = () => {
-	const dispatch = useDispatch();
+export const App: React.FC = () => {
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
 	const location = useLocation();
-
 	const background = (location.state as TLocationState | undefined)?.background;
 
-	const { item: selectedIngredient } = useSelector(
-		(state: any) => state.ingredientDetails
+	const selectedIngredient = useAppSelector(
+		(state) => state.ingredientDetails.item
 	);
-	const { error, loading } = useSelector((state: any) => state.ingredients);
-	const { isModalOpen } = useSelector((state: any) => state.order);
+	const { error, loading } = useAppSelector((state) => state.ingredients);
+	const { isModalOpen } = useAppSelector((state) => state.order);
 
 	useEffect(() => {
-		dispatch(fetchIngredients() as any);
-		dispatch(checkAuth() as any);
+		dispatch(fetchIngredients());
+		dispatch(checkAuth());
 	}, [dispatch]);
 
 	const closeModal = () => {
 		if (selectedIngredient) {
-			dispatch(closeIngredient() as any);
+			dispatch(closeIngredient());
 			if (background) {
 				navigate(-1);
 			} else {
@@ -60,8 +60,7 @@ export const App = () => {
 			}
 			return;
 		}
-
-		dispatch(clearOrder() as any);
+		dispatch(clearOrder());
 	};
 
 	if (loading) {
@@ -86,10 +85,11 @@ export const App = () => {
 
 			<Routes location={background || location}>
 				<Route path='/' element={<HomePage />} />
+
 				<Route
 					path='/login'
 					element={
-						<ProtectedRoute anonymous={true}>
+						<ProtectedRoute anonymous>
 							<LoginPage />
 						</ProtectedRoute>
 					}
@@ -97,7 +97,7 @@ export const App = () => {
 				<Route
 					path='/register'
 					element={
-						<ProtectedRoute anonymous={true}>
+						<ProtectedRoute anonymous>
 							<RegisterPage />
 						</ProtectedRoute>
 					}
@@ -105,7 +105,7 @@ export const App = () => {
 				<Route
 					path='/forgot-password'
 					element={
-						<ProtectedRoute anonymous={true}>
+						<ProtectedRoute anonymous>
 							<ForgotPasswordPage />
 						</ProtectedRoute>
 					}
@@ -113,11 +113,12 @@ export const App = () => {
 				<Route
 					path='/reset-password'
 					element={
-						<ProtectedRoute anonymous={true}>
+						<ProtectedRoute anonymous>
 							<ResetPasswordPage />
 						</ProtectedRoute>
 					}
 				/>
+
 				<Route
 					path='/profile'
 					element={
@@ -146,7 +147,7 @@ export const App = () => {
 				<Route path='/ingredients/:id' element={<IngredientPage />} />
 				<Route path='/feed' element={<FeedPage />} />
 				<Route path='/feed/:number' element={<OrderPage />} />
-				<Route path='*' element={<NotFoundPage />} />
+				<Route path='* ' element={<NotFoundPage />} />
 			</Routes>
 
 			{background && (

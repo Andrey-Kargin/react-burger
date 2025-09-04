@@ -6,10 +6,10 @@ import {
 	Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 import { NavLink, useNavigate, Navigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { logoutUser, updateUser } from '../../services/authSlice';
 import { useEffect, useRef, useCallback, useState } from 'react';
+import { logoutUser, updateUser } from '../../services/authSlice';
 import { usePageTitle } from '../../utils/hooks';
+import { useAppDispatch, useAppSelector } from '../../services/store';
 
 type TUser = {
 	name: string;
@@ -22,7 +22,7 @@ const profileLinks: Array<{ route: string; text: string }> = [
 ];
 
 const ProfilePage: React.FC = () => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const nameRef = useRef<HTMLInputElement | null>(null);
 
@@ -35,10 +35,10 @@ const ProfilePage: React.FC = () => {
 		email: '',
 		password: '',
 	});
-	const [isChanged, setIsChanged] = useState<boolean>(false);
-	const [disabled, setDisabled] = useState<boolean>(true);
+	const [isChanged, setIsChanged] = useState(false);
+	const [disabled, setDisabled] = useState(true);
 
-	const { user, isAuthenticated } = useSelector((state: any) => state.auth) as {
+	const { user, isAuthenticated } = useAppSelector((state) => state.auth) as {
 		user: TUser | null;
 		isAuthenticated: boolean;
 	};
@@ -75,14 +75,14 @@ const ProfilePage: React.FC = () => {
 	const onSubmit = useCallback(
 		(e: React.FormEvent<HTMLFormElement>) => {
 			e.preventDefault();
-			(dispatch as any)(updateUser(values));
+			dispatch(updateUser(values));
 			setIsChanged(false);
 		},
 		[dispatch, values]
 	);
 
 	const signOut = async () => {
-		await (dispatch as any)(logoutUser());
+		await dispatch(logoutUser());
 		navigate('/login');
 	};
 
