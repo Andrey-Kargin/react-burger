@@ -1,0 +1,100 @@
+/* Две колонки: слева фикс 608px, справа — резиновая. Обе с независимым скроллом внутри. */
+.wrapper {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  display: grid;
+  grid-template-columns: 608px minmax(0, 1fr); /* слева 608px */
+  column-gap: 60px; /* расстояние между колонками */
+  min-height: 100vh;
+}
+
+/* Левая колонка */
+.left {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Скроллируемая область левой колонки */
+.leftScroll {
+  /* Высота — на весь экран минус примерный отступ под шапку/заголовок и нижнюю паддингу */
+  height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Список карточек */
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Правая колонка: верхний отступ 100px и собственный скролл */
+.right {
+  min-width: 0;
+  padding-top: 100px; /* строго по требованию */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Внутренняя скроллируемая область правой колонки */
+.rightScroll {
+  height: calc(100vh - 100px - 40px); /* 100 сверху + нижняя паддинга контейнера */
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Две колонки статусов: по 272px каждая, зазор 36px */
+.statusBoard {
+  display: grid;
+  grid-template-columns: 272px 272px; /* строго 272px */
+  column-gap: 36px;                  /* строго 36px */
+  align-items: start;
+}
+
+/* Колонка статуса */
+.statusCol {
+  min-width: 0;
+}
+
+/* Внутренние узкие колонки с номерами (до 10 строк каждая) */
+.numberColumns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* Одна узкая колонка номеров */
+.numberCol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  width: 120px; /* помещается несколько в 272px вместе с gap */
+}
+
+/* Готовые — бирюзовые */
+.done {
+  color: #00cccc;
+}
+
+/* Блоки тоталов: отступ строго 68px */
+.totalsBlock {
+  margin-top: 68px; /* строго 68px между блоками */
+}
+
+/* Свечение чисел */
+.glow {
+  text-shadow: 0 0 32px rgba(51, 51, 255, 0.35);
+}

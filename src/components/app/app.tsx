@@ -18,14 +18,18 @@ import IngredientPage from '../../pages/ingredients-page/ingredient-page';
 import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import HomePage from '../../pages/home-page/home-page';
 
+import FeedPage from '../../pages/feed-page/feed-page';
+import ProfileOrdersPage from '../../pages/profile-orders-page/profile-orders-page';
+import OrderPage from '../../pages/order-page/order-page';
+import OrderInfoModal from '../modal/order-info-modal';
+
 import { fetchIngredients } from '../../services/ingredientsSlice';
 import { closeIngredient } from '../../services/ingredientDetailsSlice';
 import { clearOrder } from '../../services/orderSlice';
 
 import ProtectedRoute from '../protected-route/protected-route';
 import { checkAuth } from '../../services/authSlice';
-
-type TLocationState = { background?: Location };
+import type { TLocationState } from '../../utils/types';
 
 export const App = () => {
 	const dispatch = useDispatch();
@@ -115,20 +119,48 @@ export const App = () => {
 					}
 				/>
 				<Route
-					path='/profile/*'
+					path='/profile'
 					element={
 						<ProtectedRoute>
 							<ProfilePage />
 						</ProtectedRoute>
 					}
 				/>
+				<Route
+					path='/profile/orders'
+					element={
+						<ProtectedRoute>
+							<ProfileOrdersPage />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path='/profile/orders/:number'
+					element={
+						<ProtectedRoute>
+							<OrderPage />
+						</ProtectedRoute>
+					}
+				/>
+
 				<Route path='/ingredients/:id' element={<IngredientPage />} />
+				<Route path='/feed' element={<FeedPage />} />
+				<Route path='/feed/:number' element={<OrderPage />} />
 				<Route path='*' element={<NotFoundPage />} />
 			</Routes>
 
 			{background && (
 				<Routes>
 					<Route path='/ingredients/:id' element={<IngredientModal />} />
+					<Route path='/feed/:number' element={<OrderInfoModal />} />
+					<Route
+						path='/profile/orders/:number'
+						element={
+							<ProtectedRoute>
+								<OrderInfoModal />
+							</ProtectedRoute>
+						}
+					/>
 				</Routes>
 			)}
 

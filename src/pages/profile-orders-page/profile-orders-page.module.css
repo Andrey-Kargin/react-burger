@@ -1,0 +1,17 @@
+/* Используем сетку и отступы ИЗ profile-page для консистентности.
+   Здесь только список и линк-обёртка. */
+
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0 8px 24px 0;
+	display: grid;
+	gap: 16px;
+	/* НЕ ограничиваем max-height, пусть прокручивается вся страница,
+     чтобы не «терялся» контент как у тебя в /feed */
+}
+
+.cardLink {
+	text-decoration: none;
+	color: inherit;
+}

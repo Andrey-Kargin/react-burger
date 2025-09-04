@@ -1,8 +1,11 @@
 export async function checkResponse<T>(res: Response): Promise<T> {
-	if (res.ok) {
-		return res.json() as Promise<T>;
+	if (!res.ok) {
+		let message = 'Ошибка сервера';
+		try {
+			const data = await res.json();
+			if (data?.message) message = data.message;
+		} catch {}
+		throw new Error(message);
 	}
-
-	const err = await res.json().catch(() => ({}));
-	return Promise.reject(new Error(err.message || 'Ошибка сервера'));
+	return res.json() as Promise<T>;
 }
