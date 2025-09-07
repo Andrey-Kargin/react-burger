@@ -3,7 +3,6 @@ import {
 	CurrencyIcon,
 	Button,
 } from '@ya.praktikum/react-developer-burger-ui-components';
-import { useDispatch, useSelector } from 'react-redux';
 import { useDrop } from 'react-dnd';
 import { useMemo } from 'react';
 import { DraggableItem } from './draggable-item';
@@ -16,31 +15,35 @@ import {
 } from '../../services/constructorSlice';
 import { sendOrder } from '../../services/orderSlice';
 import styles from './burger-constructor.module.css';
+import { useAppDispatch, useAppSelector } from '../../services/store';
 import { TIngredient, TConstructorIngredient } from '../../utils/types';
 
 const BurgerConstructor: React.FC = () => {
-	const dispatch = useDispatch();
-	const { isAuthenticated } = useSelector((state: any) => state.auth);
+	const dispatch = useAppDispatch();
+	const { isAuthenticated } = useAppSelector((state) => state.auth);
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const { bun, ingredients } = useSelector(
-		(state: any) => state.burgerConstructor
-	) as { bun: TIngredient | null; ingredients: TConstructorIngredient[] };
+	const { bun, ingredients } = useAppSelector(
+		(state) => state.burgerConstructor
+	) as {
+		bun: TIngredient | null;
+		ingredients: TConstructorIngredient[];
+	};
 
 	const [, dropTarget] = useDrop<TIngredient>({
 		accept: 'ingredient',
 		drop: (item) => {
-			(dispatch as any)(addIngredient(item));
+			dispatch(addIngredient(item));
 		},
 	});
 
 	const moveCard = (fromIndex: number, toIndex: number) => {
-		(dispatch as any)(moveIngredient({ fromIndex, toIndex }));
+		dispatch(moveIngredient({ fromIndex, toIndex }));
 	};
 
 	const handleRemove = (uid: string) => {
-		(dispatch as any)(removeIngredient(uid));
+		dispatch(removeIngredient(uid));
 	};
 
 	const orderTotal = useMemo(() => {
@@ -64,7 +67,7 @@ const BurgerConstructor: React.FC = () => {
 			...ingredients.map((item) => item._id),
 			bun._id,
 		];
-		(dispatch as any)(sendOrder(ingredientIds));
+		dispatch(sendOrder(ingredientIds));
 	};
 
 	return (

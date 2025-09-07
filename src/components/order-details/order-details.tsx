@@ -1,12 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import styles from './order-details.module.css';
 import doneIcon from '../../images/done.svg';
+import { useAppSelector } from '../../services/store';
 
 const OrderDetails: React.FC = () => {
-	const { number, loading, error } = useSelector((state: any) => state.order);
+	const { number, isLoading, error } = useAppSelector((state) => state.order);
 
-	if (loading) {
+	if (isLoading) {
 		return (
 			<p className='text text_type_main-medium mt-10 mb-10'>
 				Оформляем заказ...

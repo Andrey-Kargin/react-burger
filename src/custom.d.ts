@@ -16,9 +16,9 @@ declare module '*.jpg' {
 	const content: any;
 	export default content;
 }
-declare module '*.json' {
-	const content: any;
-	export default content;
+declare module '*.gif' {
+	const src: string;
+	export default src;
 }
 
 declare module '*.module.css' {

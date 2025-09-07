@@ -16,7 +16,7 @@ const AppHeader: React.FC = () => {
 					<BurgerIcon type='primary' />
 					<p className='text text_type_main-default'>Конструктор</p>
 				</NavLink>
-				<NavLink to='/' className={`${styles.button} pt-4 pr-5 pb-4 pl-5`}>
+				<NavLink to='/feed' className={`${styles.button} pt-4 pr-5 pb-4 pl-5`}>
 					<ListIcon type='secondary' />
 					<p className='text text_type_main-default text_color_inactive'>
 						Лента заказов

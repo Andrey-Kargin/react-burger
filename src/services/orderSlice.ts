@@ -35,8 +35,9 @@ export const sendOrder = createAsyncThunk<
 			body: JSON.stringify({ ingredients: ingredientIds }),
 		});
 		return data.order.number;
-	} catch (err: any) {
-		return rejectWithValue(err?.message ?? 'Failed to send order');
+	} catch (e: unknown) {
+		const message = e instanceof Error ? e.message : 'Failed to send order';
+		return rejectWithValue(message);
 	}
 });
 
@@ -73,5 +74,4 @@ const orderSlice = createSlice({
 });
 
 export const { clearOrder } = orderSlice.actions;
-
 export default orderSlice.reducer;

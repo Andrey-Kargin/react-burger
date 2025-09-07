@@ -1,0 +1,104 @@
+import React, { useEffect } from 'react';
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+
+import layout from '../profile-page/profile-page.module.css';
+import styles from './profile-orders-page.module.css';
+
+import { wsActions as profileWsActions } from '../../services/ws/profileOrdersSlice';
+import { logoutUser } from '../../services/authSlice';
+import OrderCard from '../../components/order-card/order-card';
+import type { TIngredient, TOrder } from '../../utils/types';
+import { useAppDispatch, useAppSelector } from '../../services/store';
+
+const navLinks = [
+	{ to: '/profile', text: 'Профиль' },
+	{ to: '/profile/orders', text: 'История заказов' },
+];
+
+const ProfileOrdersPage: React.FC = () => {
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+	const location = useLocation();
+
+	const { orders } = useAppSelector((s) => s.profileOrders) as {
+		orders: TOrder[];
+	};
+	const { items: allIngredients } = useAppSelector((s) => s.ingredients) as {
+		items: TIngredient[];
+	};
+
+	useEffect(() => {
+		dispatch(profileWsActions.connect());
+		return () => {
+			dispatch(profileWsActions.disconnect());
+		};
+	}, [dispatch]);
+
+	const signOut = async () => {
+		await dispatch(logoutUser());
+		navigate('/login');
+	};
+
+	return (
+		<main className={layout.main}>
+			{/* Левый сайдбар — идентично profile-page */}
+			<section className={layout.side_panel}>
+				<nav className={layout.navigation_panel}>
+					{navLinks.map((l) => (
+						<NavLink
+							key={l.to}
+							to={l.to}
+							end
+							className={({ isActive }) =>
+								`${layout.link} text text_type_main-medium ` +
+								(isActive ? 'text_color_primary' : 'text_color_inactive')
+							}>
+							{l.text}
+						</NavLink>
+					))}
+					<button
+						type='button'
+						className={`${layout.link} text text_type_main-medium text_color_inactive`}
+						onClick={signOut}>
+						Выход
+					</button>
+				</nav>
+
+				<p className='text text_type_main-default text_color_inactive'>
+					В этом разделе вы можете просмотреть свою&nbsp;историю заказов
+				</p>
+			</section>
+
+			{/* Центральная колонка — история заказов */}
+			<section className={layout.outlet}>
+				{!orders || orders.length === 0 ? (
+					<p className='text text_type_main-default text_color_inactive pt-10'>
+						История заказов пуста
+					</p>
+				) : (
+					<ul className={styles.list}>
+						{orders.map((order) => (
+							<li key={order._id}>
+								<Link
+									to={`/profile/orders/${order.number}`}
+									state={{ background: location }}
+									className={styles.cardLink}>
+									<OrderCard
+										order={order}
+										allIngredients={allIngredients}
+										showStatus
+									/>
+								</Link>
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
+
+			{/* Правая колонка-заглушка — как в profile-page */}
+			<section className={layout.side_panel} />
+		</main>
+	);
+};
+
+export default ProfileOrdersPage;

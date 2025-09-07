@@ -1,0 +1,86 @@
+.wrapper {
+	max-width: 1240px;
+	margin: 0 auto;
+	padding: 0 20px 40px;
+	display: grid;
+	grid-template-columns: 608px minmax(0, 1fr);
+	column-gap: 60px;
+	min-height: 100vh;
+}
+
+.left {
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.leftScroll {
+	height: calc(100vh - 180px);
+	overflow-y: auto;
+	padding-right: 8px;
+}
+
+.cards {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 16px;
+}
+
+.cardLink {
+	text-decoration: none;
+	color: inherit;
+}
+
+.right {
+	min-width: 0;
+	padding-top: 100px;
+	display: flex;
+	flex-direction: column;
+}
+
+.rightScroll {
+	height: calc(100vh - 100px - 40px);
+	overflow-y: auto;
+	padding-right: 8px;
+}
+
+.statusBoard {
+	display: grid;
+	grid-template-columns: 272px 272px;
+	column-gap: 36px;
+	align-items: start;
+}
+
+.statusCol {
+	min-width: 0;
+}
+
+.numberColumns {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: flex-start;
+}
+
+.numberCol {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 8px;
+	width: 120px;
+}
+
+.done {
+	color: #00cccc;
+}
+
+.totalsBlock {
+	margin-top: 68px;
+}
+
+.glow {
+	text-shadow: 0 0 32px rgba(51, 51, 255, 0.35);
+}

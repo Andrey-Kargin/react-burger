@@ -1,30 +1,14 @@
 import { useDrag } from 'react-dnd';
 import { openIngredient } from '../../services/ingredientDetailsSlice';
-import { useDispatch, useSelector } from 'react-redux';
 import styles from './burger-ingredients.module.css';
 import {
 	CurrencyIcon,
 	Counter,
 } from '@ya.praktikum/react-developer-burger-ui-components';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-type TIngredientType = 'bun' | 'sauce' | 'main';
-
-export interface TIngredient {
-	_id: string;
-	name: string;
-	type: TIngredientType;
-	proteins: number;
-	fat: number;
-	carbohydrates: number;
-	calories: number;
-	price: number;
-	image: string;
-	image_mobile: string;
-	image_large: string;
-	__v?: number;
-	uid?: string;
-}
+import { useAppDispatch, useAppSelector } from '../../services/store';
+import type { TIngredient } from '../../utils/types';
+import React from 'react';
 
 type IngredientCardProps = {
 	ingredient: TIngredient;
@@ -33,12 +17,12 @@ type IngredientCardProps = {
 export const IngredientCard: React.FC<IngredientCardProps> = ({
 	ingredient,
 }) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const { ingredients, bun } = useSelector(
-		(state: any) => state.burgerConstructor
+	const { ingredients, bun } = useAppSelector(
+		(state) => state.burgerConstructor
 	) as {
 		ingredients: TIngredient[];
 		bun: TIngredient | null;
@@ -60,14 +44,16 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
 	);
 
 	const handleClick = () => {
-		dispatch(openIngredient(ingredient) as any);
+		dispatch(openIngredient(ingredient));
 		navigate(`/ingredients/${ingredient._id}`, {
 			state: { background: location },
 		});
 	};
 
 	return (
-		<li className={styles.ingredientCard} ref={dragRef as any}>
+		<li
+			className={styles.ingredientCard}
+			ref={dragRef as unknown as React.Ref<HTMLLIElement>}>
 			<button
 				type='button'
 				onClick={handleClick}

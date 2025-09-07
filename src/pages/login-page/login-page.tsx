@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { loginUser, resetError } from '../../services/authSlice';
 import { Navigate, Link, useLocation } from 'react-router-dom';
 import { useForm } from '../../hooks/useForm';
@@ -9,14 +8,13 @@ import {
 } from '@ya.praktikum/react-developer-burger-ui-components';
 
 import styles from './login-page.module.css';
+import { useAppDispatch, useAppSelector } from '../../services/store';
 
 const LoginPage: React.FC = () => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const location = useLocation();
 
-	const { isAuthenticated, error } = useSelector(
-		(state: any) => state.auth
-	) as {
+	const { isAuthenticated, error } = useAppSelector((state) => state.auth) as {
 		isAuthenticated: boolean;
 		error: string | null;
 	};
@@ -29,12 +27,12 @@ const LoginPage: React.FC = () => {
 	);
 
 	useEffect(() => {
-		(dispatch as any)(resetError());
+		dispatch(resetError());
 	}, [dispatch]);
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		(dispatch as any)(loginUser(values));
+		dispatch(loginUser(values));
 	};
 
 	const from =

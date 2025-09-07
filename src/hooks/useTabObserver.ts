@@ -1,18 +1,24 @@
-import { useEffect, useRef, RefObject } from 'react';
+import {
+	useEffect,
+	useRef,
+	type RefObject,
+	type MutableRefObject,
+} from 'react';
 
-type CategoryRefs<T extends HTMLElement = HTMLElement> = {
-	current: Record<string, RefObject<T>>;
-};
-
-export function useTabObserver<T extends HTMLElement = HTMLElement>(
-	categoryRefs: CategoryRefs<T>,
-	setCurrent: (key: string) => void
+export function useTabObserver<
+	TTab extends string,
+	TEl extends HTMLElement = HTMLDivElement
+>(
+	categoryRefs: MutableRefObject<Record<TTab, RefObject<TEl>>>,
+	setCurrent: (key: TTab) => void
 ) {
 	const isManualScroll = useRef(false);
-	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const timeoutRef = useRef<number | null>(null);
 
 	useEffect(() => {
-		const entriesArray = Object.entries(categoryRefs.current);
+		const entriesArray = Object.entries(categoryRefs.current) as Array<
+			[TTab, RefObject<TEl>]
+		>;
 
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -23,12 +29,11 @@ export function useTabObserver<T extends HTMLElement = HTMLElement>(
 					.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
 
 				if (visible.length > 0) {
+					const firstTarget = visible[0].target as TEl;
 					const targetKey = entriesArray.find(
-						([, ref]) => ref.current === visible[0].target
+						([, ref]) => ref.current === firstTarget
 					)?.[0];
-					if (targetKey) {
-						setCurrent(targetKey);
-					}
+					if (targetKey) setCurrent(targetKey);
 				}
 			},
 			{
@@ -48,8 +53,8 @@ export function useTabObserver<T extends HTMLElement = HTMLElement>(
 	return {
 		setManualScroll: () => {
 			isManualScroll.current = true;
-			if (timeoutRef.current) clearTimeout(timeoutRef.current);
-			timeoutRef.current = setTimeout(() => {
+			if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+			timeoutRef.current = window.setTimeout(() => {
 				isManualScroll.current = false;
 			}, 500);
 		},
