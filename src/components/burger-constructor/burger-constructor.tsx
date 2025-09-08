@@ -73,7 +73,8 @@ const BurgerConstructor: React.FC = () => {
 	return (
 		<section
 			className={`${styles.burgerConstructor} mt-25 pl-4`}
-			ref={dropTarget}>
+			ref={dropTarget}
+			data-cy='constructor'>
 			{bun && (
 				<ConstructorElement
 					extraClass='ml-8'
@@ -118,7 +119,8 @@ const BurgerConstructor: React.FC = () => {
 					type='primary'
 					size='large'
 					extraClass='ml-10'
-					onClick={handleOrder}>
+					onClick={handleOrder}
+					data-cy='place-order'>
 					Оформить заказ
 				</Button>
 			</div>

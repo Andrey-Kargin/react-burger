@@ -26,14 +26,15 @@ const Modal: React.FC<ModalProps> = ({ onClose, title, children }) => {
 	return createPortal(
 		<>
 			<ModalOverlay onClose={onClose} />
-			<div className={styles.modal}>
+			<div className={styles.modal} data-cy='modal'>
 				<div className={styles.header}>
 					<h2 className='text text_type_main-large'>{title}</h2>
 					<button
 						className={styles.closeButton}
 						onClick={onClose}
 						aria-label='Закрыть'
-						type='button'>
+						type='button'
+						data-cy='modal-close'>
 						<CloseIcon type='primary' />
 					</button>
 				</div>

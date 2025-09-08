@@ -1,26 +1,7 @@
 import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit';
+import type { TIngredient, TConstructorIngredient } from '../utils/types';
 
-type TIngredientType = 'bun' | 'sauce' | 'main';
-
-export interface TIngredient {
-	_id: string;
-	name: string;
-	type: TIngredientType;
-	price: number;
-	image: string;
-	image_mobile: string;
-	image_large: string;
-	proteins?: number;
-	fat?: number;
-	carbohydrates?: number;
-	calories?: number;
-	__v?: number;
-	uid?: string;
-}
-
-type TConstructorIngredient = TIngredient & { uid: string };
-
-type ConstructorState = {
+export type ConstructorState = {
 	bun: TIngredient | null;
 	ingredients: TConstructorIngredient[];
 };
@@ -51,7 +32,7 @@ const constructorSlice = createSlice({
 		},
 		removeIngredient(state, action: PayloadAction<string>) {
 			state.ingredients = state.ingredients.filter(
-				(item) => item.uid !== action.payload
+				(i) => i.uid !== action.payload
 			);
 		},
 		moveIngredient(

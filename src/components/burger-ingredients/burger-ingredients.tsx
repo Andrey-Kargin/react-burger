@@ -59,7 +59,10 @@ function BurgerIngredients() {
 
 			<div className={styles.ingredientsList}>
 				{tabs.map((tab) => (
-					<div key={tab.type} ref={categoryRefs.current[tab.type]}>
+					<div
+						key={tab.type}
+						ref={categoryRefs.current[tab.type]}
+						data-cy={`section-${tab.type}`}>
 						<h2 className='text text_type_main-medium mt-10 mb-6'>
 							{tab.label}
 						</h2>

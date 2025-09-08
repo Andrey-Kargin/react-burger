@@ -53,7 +53,8 @@ export const IngredientCard: React.FC<IngredientCardProps> = ({
 	return (
 		<li
 			className={styles.ingredientCard}
-			ref={dragRef as unknown as React.Ref<HTMLLIElement>}>
+			ref={dragRef as unknown as React.Ref<HTMLLIElement>}
+			data-cy='ingredient-card'>
 			<button
 				type='button'
 				onClick={handleClick}
