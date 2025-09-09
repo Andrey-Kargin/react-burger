@@ -22,7 +22,9 @@ const OrderDetails: React.FC = () => {
 
 	return (
 		<div className={styles.wrapper}>
-			<h2 className='text text_type_digits-large mb-8'>{number}</h2>
+			<h2 className='text text_type_digits-large mb-8' data-cy='order-number'>
+				{number}
+			</h2>
 			<p className='text text_type_main-medium'>идентификатор заказа</p>
 			<img src={doneIcon} alt='Заказ готовится' className='mt-15 mb-15' />
 			<p className='text text_type_main-default mb-2'>
